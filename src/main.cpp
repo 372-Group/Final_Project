@@ -7,11 +7,19 @@
 #include <avr/io.h>
 #include "i2c.h"
 #include "timer.h"
+#include "adc.h"
+#include "switch.h"
+
 #define DELAY 1000
 
 typedef enum coordinates {x0 = 0x32, x1 = 0x33, y0=0x34, y1=0x35, z0=0x36, z1=0x37};
 
 int main(){
+  initADC();
+  initTimer1();
+  initSwitchPB3();
+  sei();
+
   int Address = 0x53; // This is the slave address
   int x=0;
   int y=0;
@@ -19,7 +27,7 @@ int main(){
 
   Serial.begin(9600);
   Serial.flush();
-  sei();
+
   initTimer1();
   initI2C();
 
