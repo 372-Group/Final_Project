@@ -9,6 +9,7 @@
 #include "timer.h"
 #include "adc.h"
 #include "switch.h"
+#include "lcd.h"
 
 #define DELAY 1000
 
@@ -18,6 +19,8 @@ int main(){
   initADC();
   initTimer1();
   initSwitchPB3();
+  initLCD();
+  initI2C();
   sei();
 
   int Address = 0x53; // This is the slave address
@@ -27,9 +30,6 @@ int main(){
 
   Serial.begin(9600);
   Serial.flush();
-
-  initTimer1();
-  initI2C();
 
   /* begin transmission by passing in our slave address 0x53*/
   beginTransmission(Address);
