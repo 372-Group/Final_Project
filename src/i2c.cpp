@@ -57,3 +57,7 @@ void requestFrom(int num1, int num2){
 
     write((num2 << 1) + I2C_READ); // sets read bit from 1
 }
+
+float ReadTempC(){
+    return 0.0;
+}
