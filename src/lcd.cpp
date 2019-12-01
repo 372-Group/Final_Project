@@ -28,11 +28,11 @@ void initLCDPins(){
  *  4. delay the provided number in MICROseconds.
  */
 void fourBitCommandWithDelay(unsigned char data, unsigned int delay){
-  PORTA = data;                           // Sending the bottom 4 bits of data
-  PORTB |= (1 << PORTB4);                 //3. //E pin
-  PORTB &= ~(1 << PORTB6);                //2. //RS pin
-  delayUs(1);                             //3.
-  PORTB &= ~(1 << PORTB4);                //3.
+  PORTA = (data & 0x0F);                  // 1. Sending the bottom 4 bits of data
+  PORTB &= ~(1 << PORTB6);                // 2. Set RS pin to low 
+  PORTB |= (1 << PORTB4);                 // 3.1 Set EN pin to high
+  delayUs(1);                             // 3.2 Set 1 microsecond delay
+  PORTB &= ~(1 << PORTB4);                // 3.3 Set EN pin to low
   delayUs(delay);                         //4.
 }
 
@@ -48,17 +48,18 @@ void fourBitCommandWithDelay(unsigned char data, unsigned int delay){
  * 6. delay the provided number in MICROseconds.
  */
 void eightBitCommandWithDelay(unsigned char command, unsigned int delay){
-  PORTA = command >> 4;                   // sending the top 4 bits of "command" first.
-  PORTB |= (1 << PORTB4);                 //3. Assert high on enable pin
-  PORTB &= ~(1 << PORTB6);                //2. This is a command signal, meaning RS should be low
-  delayUs(1);                             //3. delay,
-  PORTB &= ~(1 << PORTB4);                //3. assert low on enable pin
+  PORTA = ((command & 0xF0) >> 4);        // 1. Sending the top 4 bits of "command" first. 
+  PORTB &= ~(1 << PORTB6);                // 2. Set RS pin to low
+  PORTB |= (1 << PORTB4);                 // 3.1 Set EN pin to high
+  delayUs(1);                             // 3.2 Set 1 microsecond delay
+  PORTB &= ~(1 << PORTB4);                // 3.3 Set EN pin to low
 
-  PORTA = command;                        // sending the bottom 4 bits of "command".
-  PORTB |= (1 << PORTB4);                 //3. Assert high on enable pin
-  delayUs(1);                             //3. delay for microsecond
-  PORTB &= ~(1 << PORTB4);                //3. Assert low on enable pin
-  delayUs(delay);           
+  PORTA = (command & 0x0F);               // 1. Sending the bottom 4 bits of "command".
+  PORTB &= ~(1 << PORTB6);                // 2. Set RS pin to low
+  PORTB |= (1 << PORTB4);                 // 3.1 Set EN pin to high
+  delayUs(1);                             // 3.2 Set 1 microsecond delay
+  PORTB &= ~(1 << PORTB4);                // 3.3 Set EN pin to low
+  delayUs(delay);            
 }
 
 /* Similar to eightBitCommandWithDelay except that now RS should be high
@@ -89,11 +90,10 @@ void writeCharacter(unsigned char character){
  * that this should just call writeCharacter multiple times.
  */
 void writeString(const char *string){
-  int i=0;
-  while( string[i] != '\0'){    // While the current character at the index is not '\0' loop.
-    writeCharacter(string[i]);
-    i++;
-  }
+  while (*string != '\0'){
+        writeCharacter(*string);  // passing the character to the writeCharacter function
+        string++;                 // increment through the array of characters
+    }
 }
 
 /*
