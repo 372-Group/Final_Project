@@ -22,11 +22,29 @@ void initTimer1(){
     
     // This sets our output compare register to 16, thus allowing us to have 1 microsecond delay
     OCR1A = 16; // 16 for lcd display and motor fans
-    OCR1A = 255; // 255 for i2c
+    //OCR1A = 255; // 255 for i2c
     
 }
 
-void initTimer0LED(){
+/* This delays the program an amount specified by unsigned int delay.
+ */
+// delay for the motor fan and lcd
+void delayUs(unsigned int delay){
+    //setthecounterto0
+    TIFR1|=(1<<OCF1A);
+
+    TCNT1=0;
+    unsigned int count = 0;
+    
+    while(count<delay){
+        if((TIFR1&(1<<OCF1A))){//increment everytime the timerr aises a flag
+            count++;
+            TIFR1|=(1<<OCF1A);//set timer to start counting again
+        }
+    }   
+}
+
+void initTimer0(){
     TCCR0A&= ~(1<< WGM00);
     TCCR0A|= (1 << WGM01);
     TCCR0B&= ~(1<< WGM02);
@@ -53,38 +71,4 @@ while(delaycount < delay){
     delaycount=delaycount + 1;
     }
 }
-}
-
-/* This delays the program an amount specified by unsigned int delay.
- */
-// delay for the motor fan and lcd
-void delayUs(unsigned int delay){
-    //setthecounterto0
-    TIFR1|=(1<<OCF1A);
-
-    TCNT1=0;
-    unsigned int count = 0;
-    
-    while(count<delay){
-        if((TIFR1&(1<<OCF1A))){//increment everytime the timerr aises a flag
-            count++;
-            TIFR1|=(1<<OCF1A);//set timer to start counting again
-        }
-    }   
-}
-
-// delay for the i2c
-void delayMs(unsigned int delay){
-    //setthecounterto0
-    TIFR1|=(1<<OCF1A);
-
-    TCNT1=0;
-    unsigned int count = 0;
-    
-    while(count<delay){
-        if((TIFR1&(1<<OCF1A))){//increment everytime the timerr aises a flag
-            count++;
-            TIFR1|=(1<<OCF1A);//set timer to start counting again
-        }
-    }   
 }
