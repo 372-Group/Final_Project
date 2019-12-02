@@ -23,25 +23,25 @@ int main(){
   initLCD();
   
   
-  // initI2C();
-  // sei();
+   initI2C();
+   sei();
 
-  // int Address = 0x18; // This is the slave address
+  int Address = 0x18; // This is the slave address
   int x = 75;
   // int y=0;
   //int temperature = 0;
 
   Serial.begin(9600);
-  // Serial.flush();
+  Serial.flush();
 
   // begin transmission by passing in our slave address 0x53
-  // beginTransmission(Address);
-  // write(0x01); //Writing using our power control bit
-  // write(0x05);
+  beginTransmission(Address);
+  write(0x01); //Writing using our power control bit
+  write(0x05);
   //write(0x00);
   //write(0x08);
   // end the transmission
-  // endTransmission();
+  endTransmission();
 
   // begin transmission by passing in our slave address 0x53
   /*beginTransmission(Address);
@@ -57,18 +57,18 @@ int main(){
       //const char v[] ={'a'};
       // v+='a';
       // begin transmission by passing in our slave address 0x53
-      //beginTransmission(Address);
-      //requestFrom(0x02, Address); // Requesting from address 0x05, the "Ambient Temperature"
-      //x = (read() << 8); // set z to read()'s return value, shifted 8 bits to the left 
+      beginTransmission(Address);
+      requestFrom(0x02, Address); // Requesting from address 0x05, the "Ambient Temperature"
+      x = (read() << 8); // set z to read()'s return value, shifted 8 bits to the left 
       // end the transmission
-      //endTransmission();
+      endTransmission();
       
       // begin transmission by passing in our slave address
-      //beginTransmission(Address);
-      //requestFrom(0x05, Address);// Requesting for DATAX0 (0X32)
-      //x |= read();// OR'ing the bits returned from read() with the value currently in x
+      beginTransmission(Address);
+      requestFrom(0x05, Address);// Requesting for DATAX0 (0X32)
+      x |= read();// OR'ing the bits returned from read() with the value currently in x
       // end the transmission
-      //endTransmission();
+      endTransmission();
       
       // begin transmission by passing in our slave address
       /*beginTransmission(Address);
