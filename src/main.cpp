@@ -14,28 +14,32 @@
 
 #define DELAY 1000
 
-//typedef enum coordinates {x0 = 0x32, x1 = 0x33, y0=0x34, y1=0x35, z0=0x36, z1=0x37};
+typedef enum{
+  WAIT_PRESS,
+  WAIT_RELEASE
+} states;
+
+volatile states state = WAIT_PRESS;
+boolean On = true;
 
 int main(){
   // initADC();
   initTimer1();
-  // initSwitchPB3();
+  initSwitchPB3();
   initLCD();
-  
-  
-  // initI2C();
-  // sei();
+  sei();
+  //initI2C();
 
-  // int Address = 0x18; // This is the slave address
+  int Address = 0x18; // This is the slave address
   int x = 75;
   // int y=0;
   //int temperature = 0;
 
   Serial.begin(9600);
-  // Serial.flush();
+  Serial.flush();
 
   // begin transmission by passing in our slave address 0x53
-  // beginTransmission(Address);
+  //beginTransmission(Address);
   // write(0x01); //Writing using our power control bit
   // write(0x05);
   //write(0x00);
@@ -95,18 +99,47 @@ int main(){
       Serial.print("\t");*/
       // temperature = x;
       // char msg = (char)temperature;
+      switch(state){
+      case WAIT_PRESS:  
+      delayMs(200);
+      break;
+      case WAIT_RELEASE:
+      delayMs(200);
+      break;
+    }
       moveCursor(0,4);
-      //z = (char)x;
       char arr[10] = "";
       itoa(x,arr,10);
 
       writeString(arr);
       Serial.println(x);
-      delayMs(500);
+      delayMs(1000);
       
-      // Serial.print("\n");
-      // delayMs(5000); // get's new temperature once every second
 
     }
     return 0;
+}
+
+ISR(PCINT0_vect){
+  if(state == WAIT_PRESS){
+    state = WAIT_RELEASE;
+  }
+  else if( state == WAIT_RELEASE ){
+    state = WAIT_PRESS;
+    On=~On;
+    if(~On){
+      turnOffLCD();
+      turnOffLED();
+      turnOffHeatPad();
+      turnOffFan();
+    }
+    else{
+      turOnLCD();
+      turOnLED();
+      turOnHeadPad();
+      turnOnFan();
+    }
+
+  }
+  delayMs(200);
 }
