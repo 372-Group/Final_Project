@@ -45,7 +45,7 @@ int main(){
   //write(0x00);
   //write(0x08);
   // end the transmission
-  endTransmission();
+  //endTransmission();
 
   // begin transmission by passing in our slave address 0x53
   /*beginTransmission(Address);
