@@ -130,12 +130,14 @@ ISR(PCINT0_vect){
       turnOffLED();
       turnOffHeatPad();
       turnOffFan();
+      turnOffSpeaker();
     }
     else{
       turOnLCD();
       turOnLED();
       turOnHeadPad();
       turnOnFan();
+      turnOnSpeaker();
     }
 
   }
