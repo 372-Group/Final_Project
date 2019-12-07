@@ -10,6 +10,8 @@
 #include <avr/io.h>
 
 void initLCD();
+void turnOnLCD();
+void turnOffLCD();
 void initLCDPins();
 void initLCDProcedure();
 void sendCommand();

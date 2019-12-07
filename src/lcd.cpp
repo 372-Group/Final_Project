@@ -17,6 +17,7 @@
 void initLCDPins(){
   DDRA |= (1 << DDA0) | (1 << DDA1) | (1 << DDA2) | (1 << DDA3);
   DDRB |= (1 << DDB4) | (1 << DDB6);
+  DDRG |= (1 << DDG0) | (1 << DDG1);
 }
 
 /* 1. Assert bits to pins connected to DB[7:4] on the LCD screen
@@ -155,5 +156,17 @@ void initLCDProcedure(){
 */
 void initLCD(){
   initLCDPins();  // Initializes needed pins.
+  turnOnLCD();
   initLCDProcedure();
 }
+
+void turnOffLCD(){
+  PORTG |= (1<<PORTG0);
+  PORTG &= ~(1<<PORTG1);
+}
+
+void turnOnLCD(){
+  PORTG &= ~(1 << PORTG0);
+  PORTG |= (1 << PORTG1);
+}
+  

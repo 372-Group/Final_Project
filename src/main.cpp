@@ -11,6 +11,8 @@
 #include "adc.h"
 #include "switch.h"
 #include "lcd.h"
+#include "led.h"
+#include "pwm.h"
 
 #define DELAY 1000
 
@@ -20,21 +22,24 @@ typedef enum{
 } states;
 
 volatile states state = WAIT_PRESS;
-boolean On = true;
+int On = 1;
 
 int main(){
-  // initADC();
+  initADC();
   initTimer1();
   initSwitchPB3();
   initLCD();
+  initLED();
   sei();
+  initPWMTimer3();
   //initI2C();
 
+  float voltage;
   int Address = 0x18; // This is the slave address
-  int x = 75;
+  //int x = 75;
   // int y=0;
-  //int temperature = 0;
-
+  int temperature = 0;
+  int beeped = 0;
   Serial.begin(9600);
   Serial.flush();
 
@@ -57,7 +62,8 @@ int main(){
 	// Serial.flush();
      //char z[]  =" ";
     while(1){
-       x=x+1;
+       temperature+=1;
+       char arr[10] = "";
       //const char v[] ={'a'};
       // v+='a';
       // begin transmission by passing in our slave address 0x53
@@ -99,21 +105,92 @@ int main(){
       Serial.print("\t");*/
       // temperature = x;
       // char msg = (char)temperature;
+
+        if(On == 0){
+          turnOffFan();
+          Serial.println(On);
+        }
+        else{
+        //result = ADCL;
+        //result += ((unsigned int) ADCH) << 8;
+        if(temperature < 10){
+          changeDutyCycle(3.0);
+        }
+        else if((temperature >10) && (temperature < 20)){
+          changeDutyCycle(5.0);
+        }
+        }
+      /******************************************************** WAIT_PRESS ************************************************************/
       switch(state){
       case WAIT_PRESS:  
-      delayMs(200);
+      moveCursor(0,4);
+      itoa(temperature,arr,10);
+      writeString(arr);
+      Serial.print(temperature);
+      Serial.print("\t");
+      delayMs(1000);
+      Serial.println(On);
+      if(temperature % 2 == 0){
+        turnOnLED(1);
+        delayMs(1000);
+        turnOffLED();
+      }
+      else{
+        turnOnLED(2);
+        delayMs(1000);
+        turnOffLED();
+      }
       break;
+
+      /******************************************************** WAIT_RELEASE ************************************************************/
       case WAIT_RELEASE:
-      delayMs(200);
+      Serial.println(On);
+      itoa(temperature,arr,10);
+      writeString(arr);
+      Serial.print(temperature);
+      Serial.print("\t");
+      delayMs(1000);
+      if(temperature % 2 == 0){
+        turnOnLED(1);
+        delayMs(1000);
+        turnOffLED();
+      }
+      else{
+        turnOnLED(2);
+        delayMs(1000);
+        turnOffLED();
+      }
       break;
     }
-      moveCursor(0,4);
-      char arr[10] = "";
-      itoa(x,arr,10);
-
-      writeString(arr);
-      Serial.println(x);
-      delayMs(1000);
+      
+      /*if(temperature > 80){
+        turnOnBeeper();
+        if(~beeped){
+          BeeperMakeNoise();
+          beeped = 1;
+        }
+        turnOffHeatPad();
+        turnOnFan();
+        changeFan(temperature);
+      }
+      else if(temperature < 70){
+        turnOnBeeper();
+        if(~beeped){
+          BeeperMakeNoise();
+          beeped = 1;
+        }
+        turnOffFan();
+        turnOnHeatPad();
+        changeHeatPad(temperature);
+      }
+      else{
+        turnOffHeatPad();
+        turnOffFan();
+        turnOffBeeper();
+        turnOffRedLED();
+        turnOffGreenLED();
+        beeped = 0;
+      }*/
     }
     return 0;
 }
@@ -124,20 +201,21 @@ ISR(PCINT0_vect){
   }
   else if( state == WAIT_RELEASE ){
     state = WAIT_PRESS;
-    On=~On;
-    if(~On){
+    if(On == 1){
+      On = 0;
       turnOffLCD();
       turnOffLED();
-      turnOffHeatPad();
-      turnOffFan();
-      turnOffSpeaker();
+      //turnOffHeatPad();
+      //turnOffFan();
+      //turnOffBeeper();
     }
     else{
-      turOnLCD();
-      turOnLED();
-      turOnHeadPad();
-      turnOnFan();
-      turnOnSpeaker();
+      On = 1;
+      turnOnLCD();
+      //initLED();
+      //turOnHeadPad();
+      //turnOnFan();
+      //turnOnBeeper();
     }
 
   }
