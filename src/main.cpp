@@ -13,6 +13,10 @@
 #include "lcd.h"
 #include "led.h"
 #include "pwm.h"
+#include "beeper.h"
+#include <Wire.h>
+#include "Adafruit_MCP9808.h"
+Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
 
 #define DELAY 1000
 
@@ -30,15 +34,17 @@ int main(){
   initSwitchPB3();
   initLCD();
   initLED();
+  initBeeper();
   sei();
   initPWMTimer3();
+  initPWMTimer4();
   //initI2C();
 
   float voltage;
   int Address = 0x18; // This is the slave address
   //int x = 75;
   // int y=0;
-  int temperature = 0;
+  float temperature = 0;
   int beeped = 0;
   Serial.begin(9600);
   Serial.flush();
@@ -61,8 +67,14 @@ int main(){
 
 	// Serial.flush();
      //char z[]  =" ";
+
+    if (!tempsensor.begin()){
+    Serial.println("Couldn't find MCP9808!");
+    while (1);
+      }
     while(1){
-       temperature+=1;
+      float c = tempsensor.readTempC();
+      temperature = c * 9.0 / 5.0 + 32;
        char arr[10] = "";
       //const char v[] ={'a'};
       // v+='a';
@@ -108,17 +120,44 @@ int main(){
 
         if(On == 0){
           turnOffFan();
+          turnOffBeeper();
           Serial.println(On);
         }
         else{
-        //result = ADCL;
-        //result += ((unsigned int) ADCH) << 8;
-        if(temperature < 10){
-          changeDutyCycle(3.0);
+      if(temperature >= 80){
+        delayMs(1000);
+        turnOnLED(1);
+        if(temperature >= 90 && temperature < 100){
+          changeDutyCycleFan(9.5);
+          Serial.print(">=90");
         }
-        else if((temperature >10) && (temperature < 20)){
-          changeDutyCycle(5.0);
+        else if(temperature >=100){
+          changeDutyCycleFan(10.0);
+          Serial.print(">=100");
         }
+        else{
+          changeDutyCycleFan(9.0);
+          Serial.print(">=80 < 90");
+        }
+      }
+      else if(temperature <= 70){
+        turnOffLED();
+        delayMs(1000);
+        turnOnLED(2);
+        if(temperature <= 60 && temperature > 50){
+          changeDutyCycleHeater(10.0);
+        }
+        else if(temperature <= 50){
+          changeDutyCycleHeater(20.0);
+        }
+        else{
+          changeDutyCycleHeater(5.0);
+        }
+      }
+      else{
+        turnOffLED();
+        changeDutyCycleFan(0.0);
+      }
         }
       /******************************************************** WAIT_PRESS ************************************************************/
       switch(state){
@@ -130,36 +169,15 @@ int main(){
       Serial.print("\t");
       delayMs(1000);
       Serial.println(On);
-      if(temperature % 2 == 0){
-        turnOnLED(1);
-        delayMs(1000);
-        turnOffLED();
-      }
-      else{
-        turnOnLED(2);
-        delayMs(1000);
-        turnOffLED();
-      }
       break;
 
       /******************************************************** WAIT_RELEASE ************************************************************/
       case WAIT_RELEASE:
-      Serial.println(On);
+      moveCursor(0,4);
       itoa(temperature,arr,10);
       writeString(arr);
       Serial.print(temperature);
-      Serial.print("\t");
       delayMs(1000);
-      if(temperature % 2 == 0){
-        turnOnLED(1);
-        delayMs(1000);
-        turnOffLED();
-      }
-      else{
-        turnOnLED(2);
-        delayMs(1000);
-        turnOffLED();
-      }
       break;
     }
       
@@ -221,3 +239,5 @@ ISR(PCINT0_vect){
   }
   delayMs(200);
 }
+
+

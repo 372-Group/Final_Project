@@ -13,7 +13,7 @@
 /* The changeDutyCycle will be changing the amount of
  * voltage that is being sent. If we have 50% duty cycle in a 5v
  * system, 2.5 will be sent out.*/
-void changeDutyCycle(double num){
+void changeDutyCycleFan(double num){
     /* If the passed in voltage is between 2.00 and 3.00,
      * we will make both motors go at full speed.
      */
@@ -25,6 +25,21 @@ void changeDutyCycle(double num){
     float percent;
     percent = num / 5;
     OCR3A = percent * 1023;
+    //OCR4A = (1 - percent) * 1023;
+}
+
+void changeDutyCycleHeater(double num){
+    /* If the passed in voltage is between 2.00 and 3.00,
+     * we will make both motors go at full speed.
+     */
+    /*percent is the voltage/5 . 
+     * OCR3A is then set to (percentage * 1023)
+     * OCR4A is then set to (1 - percentage) * 1023 
+     * */
+    Serial.println(num);
+    float percent;
+    percent = num / 5;
+    OCR4A = percent * 1023;
     //OCR4A = (1 - percent) * 1023;
 }
 
@@ -44,12 +59,12 @@ void initPWMTimer3(){
     OCR3A = 1023;/*Our output compare register is 1023*/
 }
 
-/*void initPWMTimer4(){
+void initPWMTimer4(){
     //DDRH |= (1 << DDH3);/*Assigning to pin 6 
     //Set Fast PWM to 10-bit mode for timer 4
     TCCR4A |= (1 << WGM40) | (1 << WGM41) | (1 << COM4A1);
     TCCR4A &= ~(1 << COM4A0);
     //CS40 sets the prescaler bits to 1
     TCCR4B |= (1 << WGM42) | (1 << CS40);
-    OCR4A = 1023;/*Our output compare register is 1023
-}*/
+    OCR4A = 1023;//Our output compare register is 1023
+}
