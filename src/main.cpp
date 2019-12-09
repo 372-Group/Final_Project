@@ -38,7 +38,7 @@ int main(){
   sei();
   initPWMTimer3();
   initPWMTimer4();
-  initPWMTimer5();
+  //initPWMTimer5();
   //initI2C();
 
   float voltage;
@@ -128,17 +128,17 @@ int main(){
       if(temperature >= 80){
         delayMs(1000);
         turnOnLED(1);
-        IncFrequency(2000);
+        //IncFrequency(4000);
         if(temperature >= 90 && temperature < 100){
-          changeDutyCycleFan(9.5);
+          changeDutyCycleFan(6.0);
           Serial.print(">=90");
         }
         else if(temperature >=100){
-          changeDutyCycleFan(10.0);
+          changeDutyCycleFan(9.0);
           Serial.print(">=100");
         }
         else{
-          changeDutyCycleFan(9.0);
+          changeDutyCycleFan(3.0);
           Serial.print(">=80 < 90");
         }
       }
@@ -146,15 +146,18 @@ int main(){
         turnOffLED();
         delayMs(1000);
         turnOnLED(2);
-        IncFrequency(2000);
+        //IncFrequency(4000);
         if(temperature <= 60 && temperature > 50){
-          changeDutyCycleHeater(10.0);
+          Serial.print("<=60 && >50");
+          changeDutyCycleHeater(6.0);
         }
         else if(temperature <= 50){
-          changeDutyCycleHeater(20.0);
+          Serial.print("<=50");
+          changeDutyCycleHeater(9.0);
         }
         else{
-          changeDutyCycleHeater(5.0);
+          changeDutyCycleHeater(3.0);
+          Serial.print("<=70");
         }
       }
       else{

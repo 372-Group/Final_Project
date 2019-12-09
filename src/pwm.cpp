@@ -23,7 +23,7 @@ void changeDutyCycleFan(double num){
      * */
     Serial.println(num);
     float percent;
-    percent = num / 5;
+    percent = num / 9;
     OCR3A = percent * 1023;
     //OCR4A = (1 - percent) * 1023;
 }
@@ -38,7 +38,7 @@ void changeDutyCycleHeater(double num){
      * */
     Serial.println(num);
     float percent;
-    percent = num / 5;
+    percent = num / 9;
     OCR4A = percent * 1023;
     //OCR4A = (1 - percent) * 1023;
 }
@@ -68,7 +68,7 @@ void initPWMTimer3(){
 }
 
 void initPWMTimer4(){
-    //DDRH |= (1 << DDH3);/*Assigning to pin 6 
+    DDRH |= (1 << DDH3);///*Assigning to pin 6 
     //Set Fast PWM to 10-bit mode for timer 4
     TCCR4A |= (1 << WGM40) | (1 << WGM41) | (1 << COM4A1);
     TCCR4A &= ~(1 << COM4A0);
