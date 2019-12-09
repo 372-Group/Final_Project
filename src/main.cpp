@@ -38,6 +38,7 @@ int main(){
   sei();
   initPWMTimer3();
   initPWMTimer4();
+  initPWMTimer5();
   //initI2C();
 
   float voltage;
@@ -127,6 +128,7 @@ int main(){
       if(temperature >= 80){
         delayMs(1000);
         turnOnLED(1);
+        IncFrequency(2000);
         if(temperature >= 90 && temperature < 100){
           changeDutyCycleFan(9.5);
           Serial.print(">=90");
@@ -144,6 +146,7 @@ int main(){
         turnOffLED();
         delayMs(1000);
         turnOnLED(2);
+        IncFrequency(2000);
         if(temperature <= 60 && temperature > 50){
           changeDutyCycleHeater(10.0);
         }

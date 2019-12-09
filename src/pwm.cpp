@@ -49,6 +49,14 @@ void turnOffFan(){
     //OCR4A = 0;
 }
 
+void IncFrequency(unsigned int frequency){
+    OCR5A = 16000000 / frequency;
+    OCR5AH = OCR5A >> 8;
+    OCR5AL = OCR5A;
+    OCR5CH = OCR5AH >> 1;
+    OCR5CL = OCR5AL >> 1;
+}
+
 void initPWMTimer3(){
     DDRE |= (1 << DDE3);/*Assigning to pin 5 */
     /*Set Fast PWM to 10-bit mode for timer 3*/
@@ -67,4 +75,13 @@ void initPWMTimer4(){
     //CS40 sets the prescaler bits to 1
     TCCR4B |= (1 << WGM42) | (1 << CS40);
     OCR4A = 1023;//Our output compare register is 1023
+}
+
+void initPWMTimer5(){
+    TCCR5A |= (1<<WGM50) | (1<<WGM51);
+    TCCR5B |= (1<<WGM52) | (1<<WGM52);
+    TCCR5A &= ~(1<<COM5C0);
+    TCCR5A |= (1<<COM5C1);
+    TCCR5B |= (1<<CS50);
+    DDRH |= (1<<DDH4);
 }

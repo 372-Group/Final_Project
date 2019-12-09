@@ -9,7 +9,9 @@
 // initSwitch returns void and takes no parameters
 void changeDutyCycleFan(double num);
 void changeDutyCycleHeater(double num);
+void IncFrequency(unsigned int freq);
 void initPWMTimer3();
 void initPWMTimer4();
+void initPWMTimer5();
 void turnOffFan();
 #endif
