@@ -23,7 +23,7 @@ void changeDutyCycleFan(double num){
      * */
     Serial.println(num);
     float percent;
-    percent = num / 9;
+    percent = num / 5;
     OCR3A = percent * 1023;
     //OCR4A = (1 - percent) * 1023;
 }
@@ -79,9 +79,9 @@ void initPWMTimer4(){
 
 void initPWMTimer5(){
     TCCR5A |= (1<<WGM50) | (1<<WGM51);
-    TCCR5B |= (1<<WGM52) | (1<<WGM52);
+    TCCR5B |= (1<<WGM52) | (1<<WGM53);
     TCCR5A &= ~(1<<COM5C0);
     TCCR5A |= (1<<COM5C1);
     TCCR5B |= (1<<CS50);
-    DDRH |= (1<<DDH4);
+    DDRH |= (1<<DDH5);
 }

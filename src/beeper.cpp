@@ -8,7 +8,7 @@
 #include "beeper.h"
 
 // initLED which returns void and takes no parameters. Initializes pins 4 -11
-void initBeeper(){
+/*void initBeeper(){
   // Initialize pins 4-11 on the development board to outputs
   DDRA |= (1 << DDA0);
 }
@@ -19,4 +19,4 @@ void turnOnBeeper(){
 
 void turnOffBeeper(){
     PORTA &= ~(1 << DDA0);
-}
+}*/
