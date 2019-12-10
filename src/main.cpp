@@ -13,13 +13,15 @@
 #include "lcd.h"
 #include "led.h"
 #include "pwm.h"
-#include "beeper.h"
+// #include "beeper.h"
 #include <Wire.h>
 #include "Adafruit_MCP9808.h"
 Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
 
 #define DELAY 1000
 
+void turnOnBeeper();
+void turnOffBeeper();
 typedef enum{
   WAIT_PRESS,
   WAIT_RELEASE
@@ -37,16 +39,15 @@ int main(){
   sei();
   initPWMTimer3();
   initPWMTimer4();
-  initPWMTimer5();
 
   float temperature = 0;
   Serial.begin(9600);
   Serial.flush();
 
     if (!tempsensor.begin()){
-    Serial.println("Couldn't find MCP9808!");
-    while (1);
-      }
+      Serial.println("Couldn't find MCP9808!");
+      while (1);
+    }
     while(1){
       float c = tempsensor.readTempC();
       temperature = c * 9.0 / 5.0 + 32;
@@ -56,42 +57,45 @@ int main(){
           turnOffFan();
         }
         else{
-          /*If h*/
-        if(temperature >= 77){
-        turnOffLED();
-        delayMs(1000);
-        IncFrequency(4000);
-        turnOnLED(1);
-        if(temperature >= 85 && temperature < 95){
-          changeDutyCycleFan(4.0);
-        }
-        else if(temperature >=95){
-          changeDutyCycleFan(5.0);
-        }
-        else{
-          changeDutyCycleFan(3.0);
-        }
-      }
-      else if(temperature <= 70){
-        turnOffLED();
-        delayMs(1000);
-        turnOnLED(2);
-        IncFrequency(4000);
-        if(temperature <= 65 && temperature > 60){
-          changeDutyCycleHeater(4.0);
-        }
-        else if(temperature <= 60){
-          changeDutyCycleHeater(5.0);
-        }
-        else{
-          changeDutyCycleHeater(3.0);
-        }
-      }
-      else{
-        turnOffLED();
-        IncFrequency(0);
-        changeDutyCycleFan(0.0);
-      }
+            /*If h*/
+          if(temperature >= 77){
+            turnOffLED();
+            delayMs(1000);
+            // IncFrequency(500);
+            turnOnBeeper();
+            turnOnLED(1);
+            if(temperature >= 85 && temperature < 95){
+              changeDutyCycleFan(4.0);
+            }
+            else if(temperature >=95){
+              changeDutyCycleFan(5.0);
+            }
+            else{
+              changeDutyCycleFan(3.0);
+            }
+          }
+          else if(temperature <= 70){
+            turnOffLED();
+            delayMs(1000);
+            turnOnLED(2);
+            // IncFrequency(500);
+            turnOnBeeper();
+            if(temperature <= 65 && temperature > 60){
+              changeDutyCycleHeater(4.0);
+            }
+            else if(temperature <= 60){
+              changeDutyCycleHeater(5.0);
+            }
+            else{
+              changeDutyCycleHeater(3.0);
+            }
+          }
+          else{
+            turnOffLED();
+            // IncFrequency(40);
+            turnOffBeeper();
+            changeDutyCycleFan(0.0);
+          }
         }
       /******************************************************** WAIT_PRESS ************************************************************/
       switch(state){
@@ -135,4 +139,11 @@ ISR(PCINT0_vect){
   delayMs(200);
 }
 
+void turnOnBeeper(){
+    DDRH |= (1<<DDH5);
+    tone(PORTH5, 4000);
+}
 
+void turnOffBeeper(){
+    noTone(PORTH5);
+}
