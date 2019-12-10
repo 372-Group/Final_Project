@@ -13,7 +13,6 @@
 #include "lcd.h"
 #include "led.h"
 #include "pwm.h"
-// #include "beeper.h"
 #include <Wire.h>
 #include "Adafruit_MCP9808.h"
 Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
@@ -61,7 +60,6 @@ int main(){
           if(temperature >= 77){
             turnOffLED();
             delayMs(1000);
-            // IncFrequency(500);
             turnOnBeeper();
             turnOnLED(1);
             if(temperature >= 85 && temperature < 95){
@@ -78,7 +76,6 @@ int main(){
             turnOffLED();
             delayMs(1000);
             turnOnLED(2);
-            // IncFrequency(500);
             turnOnBeeper();
             if(temperature <= 65 && temperature > 60){
               changeDutyCycleHeater(4.0);
@@ -92,7 +89,6 @@ int main(){
           }
           else{
             turnOffLED();
-            // IncFrequency(40);
             turnOffBeeper();
             changeDutyCycleFan(0.0);
           }
@@ -139,11 +135,13 @@ ISR(PCINT0_vect){
   delayMs(200);
 }
 
+// activates the pin 8 as an output and turns the beeper on
 void turnOnBeeper(){
     DDRH |= (1<<DDH5);
     tone(PORTH5, 4000);
 }
 
+// turns off the beeper
 void turnOffBeeper(){
     noTone(PORTH5);
 }
